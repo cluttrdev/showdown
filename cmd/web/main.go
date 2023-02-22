@@ -6,11 +6,15 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/fsnotify/fsnotify"
 	"github.com/gomarkdown/markdown"
+
+	watch "github.com/cluttrdev/showdown/internal"
 )
 
 type application struct {
 	FilePath string
+	Content  []byte
 }
 
 func main() {
@@ -27,12 +31,23 @@ func main() {
 		FilePath: *file,
 	}
 
+	app.render()
+
+	handler := func(e fsnotify.Event) {
+		if e.Has(fsnotify.Write) {
+			app.render()
+		}
+	}
+
+	w, err := watch.WatchFile(*file, handler)
+	defer w.Close()
+
 	srv := &http.Server{
 		Addr:    *addr,
 		Handler: app.routes(),
 	}
 
-	err := srv.ListenAndServe()
+	err = srv.ListenAndServe()
 	log.Fatal(err)
 }
 
@@ -50,17 +65,14 @@ func (app *application) root(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	app.render(w)
+	w.Write(app.Content)
 }
 
-func (app *application) render(w http.ResponseWriter) {
+func (app *application) render() {
 	in, err := os.ReadFile(app.FilePath)
 	if err != nil {
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
 
-	out := markdown.ToHTML(in, nil, nil)
-
-	w.Write(out)
+	app.Content = markdown.ToHTML(in, nil, nil)
 }
