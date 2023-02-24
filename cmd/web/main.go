@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bytes"
 	"flag"
+	"html/template"
 	"log"
 	"net/http"
 	"os"
@@ -15,6 +17,7 @@ import (
 type application struct {
 	FilePath string
 	Content  []byte
+	Template *template.Template
 }
 
 func main() {
@@ -25,10 +28,18 @@ func main() {
 
 	if *file == "" {
 		log.Fatal("No file given!")
+		return
+	}
+
+	t, err := template.ParseFiles("./web/templates/base.html.tpl")
+	if err != nil {
+		log.Fatal(err)
+		return
 	}
 
 	app := &application{
 		FilePath: *file,
+		Template: t,
 	}
 
 	app.render()
@@ -65,7 +76,23 @@ func (app *application) root(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Write(app.Content)
+	var data struct {
+		Content template.HTML
+	}
+	data.Content = template.HTML(app.Content)
+
+	buf := new(bytes.Buffer)
+
+	err := app.Template.ExecuteTemplate(buf, "base", data)
+	if err != nil {
+		log.Fatal(err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+
+	buf.WriteTo(w)
 }
 
 func (app *application) render() {
