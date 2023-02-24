@@ -8,32 +8,33 @@ import (
 	"github.com/pkg/errors"
 )
 
-func WatchFile(filePath string, handler func(e fsnotify.Event)) (*fsnotify.Watcher, error) {
+func WatchFile(filePath string, handler func(e fsnotify.Event)) error {
 	w, err := fsnotify.NewWatcher()
 	if err != nil {
-		return nil, errors.Errorf("creating a new watcher: %v", err)
+		return errors.Errorf("creating a new watcher: %v", err)
 	}
-
-	// start listening for events
-	go eventLoop(w, handler)
+	defer w.Close()
 
 	// add file
 	st, err := os.Lstat(filePath)
 	if err != nil {
-		return nil, errors.Errorf("requesting file info: %v", err)
+		return errors.Errorf("requesting file info: %v", err)
 	}
 
 	if st.IsDir() {
-		return nil, errors.Errorf("%q is a directory, not a file", filePath)
+		return errors.Errorf("%q is a directory, not a file", filePath)
 	}
 
 	err = w.Add(filePath)
 	if err != nil {
 		w.Close()
-		return nil, errors.Errorf("adding file: %v", err)
+		return errors.Errorf("adding file: %v", err)
 	}
 
-	return w, nil
+	// start listening for events
+	eventLoop(w, handler)
+
+	return nil
 }
 
 func eventLoop(w *fsnotify.Watcher, handler func(e fsnotify.Event)) {
