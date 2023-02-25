@@ -5,16 +5,16 @@
         <title></title>
 
         <script defer>
-            var ws = new WebSocket("ws://" + window.location.host + "/socket");
+            var ws = new WebSocket("ws://" + window.location.host + "/ws");
 
             ws.onmessage = (event) => {
                 var msg = JSON.parse(event.data);
                 switch (msg.type) {
                     case 'title':
-                        document.querySelector('title').setHTML(msg.data);
+                        document.querySelector('title').innerHTML = msg.data;
                         break;
                     case 'content':
-                        document.querySelector('.markdown-content').setHTML(msg.data);
+                        document.querySelector('.markdown-content').innerHTML = msg.data;
                         break;
                 }
             }
