@@ -25,7 +25,7 @@ func NewApplication(file string) *Application {
 	}
 }
 
-func (app *Application) run() error {
+func (app *Application) run(port uint16) error {
 	w, err := watch.WatchFile(app.file, func() {
 		content, err := app.render()
 		if err != nil {
@@ -42,7 +42,7 @@ func (app *Application) run() error {
 	}
 	defer w.Close()
 
-	addr := fmt.Sprintf("127.0.0.1:%s", "1337")
+	addr := fmt.Sprintf("127.0.0.1:%d", port)
 	return app.serve(addr)
 }
 
