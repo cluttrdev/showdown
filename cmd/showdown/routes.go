@@ -1,14 +1,22 @@
 package main
 
 import (
+	"embed"
 	"log"
 	"net/http"
 
 	"golang.org/x/net/websocket"
 )
 
+//go:generate cp -r ../../web/ ./assets
+//go:embed assets/*
+var assets embed.FS
+
 func (app *Application) routes() *http.ServeMux {
 	mux := http.NewServeMux()
+
+	fileServer := http.FileServer(http.Dir("./web/static/"))
+	mux.Handle("/static/", http.StripPrefix("/static/", fileServer))
 
 	mux.HandleFunc("/", app.root)
 	mux.Handle("/ws", websocket.Handler(app.socket))

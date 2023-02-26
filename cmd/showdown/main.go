@@ -1,25 +1,31 @@
 package main
 
 import (
-	"flag"
-	"log"
+	"fmt"
+	"os"
 
-	"github.com/pkg/errors"
+	"github.com/spf13/cobra"
 )
 
+var cmd = &cobra.Command{
+	Use:   "showdown [file]",
+	Short: "Live markdown previewer",
+	Args:  cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		file := args[0]
+
+		app := NewApplication(file)
+		app.run()
+	},
+}
+
 func main() {
-	file := flag.String("file", "", "The file to preview")
-	//port := flag.String("port", "1337", "HTTP network address")
-
-	flag.Parse()
-
-	if *file == "" {
-		log.Fatal("No file given!")
-		return
+	if err := cmd.Execute(); err != nil {
+		fmt.Println(os.Stderr, err)
+		os.Exit(1)
 	}
+}
 
-	app := NewApplication(*file)
-
-	err := app.run()
-	log.Fatal(errors.Errorf("Stopped listening: %v", err))
+func init() {
+	cmd.Flags().IntP("port", "p", 1337, "the port on which the server will listen")
 }
