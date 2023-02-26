@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net/http"
@@ -46,12 +47,36 @@ func (app *Application) run() error {
 }
 
 func (app *Application) serve(addr string) error {
+	m := app.routes()
+
 	srv := &http.Server{
 		Addr:    addr,
-		Handler: app.routes(),
+		Handler: m,
 	}
 
-	return srv.ListenAndServe()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	m.HandleFunc("/shutdown", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("OK"))
+		// cancel context on request
+		cancel()
+	})
+
+	go func() {
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Fatal(err)
+		}
+	}()
+
+	select {
+	case <-ctx.Done():
+		// shutdown server when context is canceled
+		srv.Shutdown(ctx)
+	}
+
+	log.Printf("Finished")
+	return nil
 }
 
 func (app *Application) render() ([]byte, error) {
