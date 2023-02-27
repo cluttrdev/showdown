@@ -2,35 +2,31 @@ package main
 
 import (
 	"embed"
+	"io/fs"
 	"log"
 	"net/http"
 
 	"golang.org/x/net/websocket"
 )
 
-//go:generate cp -r ../../web/ ./assets
-//go:embed assets/*
+//go:generate cp -r ../../web/static/ ./assets
+//go:embed assets/index.html
+//go:embed assets/js/client.js
 var assets embed.FS
 
 func (app *Application) routes() *http.ServeMux {
 	mux := http.NewServeMux()
 
-	fileServer := http.FileServer(http.Dir("./web/static/"))
-	mux.Handle("/static/", http.StripPrefix("/static/", fileServer))
+	sub, err := fs.Sub(assets, "assets")
+	if err != nil {
+		panic(err)
+	}
 
-	mux.HandleFunc("/", app.root)
+	fileServer := http.FileServer(http.FS(sub))
+	mux.Handle("/", fileServer)
 	mux.Handle("/ws", websocket.Handler(app.socket))
 
 	return mux
-}
-
-func (app *Application) root(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path != "/" {
-		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-		return
-	}
-
-	http.ServeFile(w, r, "./web/index.html")
 }
 
 func (app *Application) socket(ws *websocket.Conn) {
