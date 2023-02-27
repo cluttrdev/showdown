@@ -7,7 +7,7 @@ renders the content to HTML using [markdown][github-gomarkdown]
 and serves the output on your local machine.
 
 For an update on the latest changes please have a look at the
-[CHANGELOG](./CHANGELOG.md)
+[CHANGELOG](./CHANGELOG.md).
 
 ## Installation
 
@@ -30,7 +30,7 @@ install ./showdown /usr/local/bin/showdown
 Alternatively, you can install it using the standard Go tools.
 
 ```shell
-go install github.cluttrdev/showdown@latest
+go install github.com/cluttrdev/showdown@latest
 ```
 
 ## Usage
