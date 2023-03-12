@@ -89,3 +89,9 @@ func (app *Application) render() ([]byte, error) {
 
 	return out, nil
 }
+
+func StopServer(port uint16) error {
+	url := fmt.Sprintf("http://127.0.0.1:%d/shutdown", port)
+	_, err := http.Get(url)
+	return err
+}

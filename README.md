@@ -27,12 +27,6 @@ tar -zxf showdown_${RELEASE_TAG}_linux_x86_64.tar.gz showdown
 install ./showdown /usr/local/bin/showdown
 ```
 
-Alternatively, you can install it using the standard Go tools.
-
-```shell
-go install github.com/cluttrdev/showdown@latest
-```
-
 ## Usage
 
 To preview a Markdown formatted file `example.md` simply run
