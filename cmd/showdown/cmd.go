@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/spf13/cobra"
 )
@@ -44,6 +45,30 @@ var stopCmd = &cobra.Command{
 		_, err = http.Get(url)
 		return err
 	},
+}
+
+func Execute(defaultCmd string) {
+	// see: https://github.com/spf13/cobra/issues/823#issuecomment-949732548
+	var cmdFound bool
+outer:
+	for _, cmd := range rootCmd.Commands() {
+		for _, arg := range os.Args[1:] {
+			if cmd.Name() == arg {
+				cmdFound = true
+				break outer
+			}
+		}
+	}
+
+	if !cmdFound {
+		args := append([]string{defaultCmd}, os.Args[1:]...)
+		rootCmd.SetArgs(args)
+	}
+
+	if err := rootCmd.Execute(); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
 }
 
 func init() {

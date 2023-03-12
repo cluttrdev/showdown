@@ -1,13 +1,8 @@
 package main
 
-import (
-	"fmt"
-	"os"
-)
-
 func main() {
-	if err := rootCmd.Execute(); err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
-	}
+	// Define the default sub-command here that will
+	// be called if the user does not specify one.
+	defaultCmd := "start"
+	Execute(defaultCmd)
 }
