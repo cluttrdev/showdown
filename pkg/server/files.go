@@ -13,10 +13,10 @@ import (
 var assets embed.FS
 
 func fileServer() (http.Handler, error) {
-    fsys, err := fs.Sub(assets, "assets")
-    if err != nil {
-        return nil, fmt.Errorf("error creating filesystem subtree: %w", err)
-    }
+	fsys, err := fs.Sub(assets, "assets")
+	if err != nil {
+		return nil, fmt.Errorf("error creating filesystem subtree: %w", err)
+	}
 
-    return http.FileServer(http.FS(fsys)), nil
+	return http.FileServer(http.FS(fsys)), nil
 }

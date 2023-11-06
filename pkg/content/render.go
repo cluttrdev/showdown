@@ -1,19 +1,19 @@
 package content
 
 import (
-    "os"
+	"os"
 
-    "github.com/gomarkdown/markdown"
+	"github.com/gomarkdown/markdown"
 )
 
 type Renderer interface {
-    Render() ([]byte, error)
+	Render() ([]byte, error)
 }
 
 type RenderFunc func() ([]byte, error)
 
 type MarkdownRenderer struct {
-    File string
+	File string
 }
 
 func (r *MarkdownRenderer) Render() ([]byte, error) {
