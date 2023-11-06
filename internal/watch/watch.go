@@ -1,33 +1,33 @@
 package watch
 
 import (
+	"fmt"
 	"log"
 	"os"
 
 	"github.com/fsnotify/fsnotify"
-	"github.com/pkg/errors"
 )
 
 func WatchFile(filePath string, onWrite func()) (*fsnotify.Watcher, error) {
 	w, err := fsnotify.NewWatcher()
 	if err != nil {
-		return nil, errors.Errorf("creating a new watcher: %v", err)
+		return nil, fmt.Errorf("error creating new watcher: %w", err)
 	}
 
 	// add file
 	st, err := os.Lstat(filePath)
 	if err != nil {
-		return nil, errors.Errorf("requesting file info: %v", err)
+		return nil, fmt.Errorf("error requesting file info: %w", err)
 	}
 
 	if st.IsDir() {
-		return nil, errors.Errorf("%q is a directory, not a file", filePath)
+		return nil, fmt.Errorf("%q is a directory, not a file", filePath)
 	}
 
 	err = w.Add(filePath)
 	if err != nil {
 		w.Close()
-		return nil, errors.Errorf("adding file: %v", err)
+		return nil, fmt.Errorf("error adding file: %w", err)
 	}
 
 	// start listening for events
