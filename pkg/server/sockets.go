@@ -2,8 +2,11 @@ package server
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"io"
 	"log"
+	"net"
 
 	"golang.org/x/net/websocket"
 )
@@ -20,9 +23,12 @@ func (s *Server) handleWebSocket(ws *websocket.Conn) {
 		for {
 			var msg []byte
 			if err := websocket.Message.Receive(ws, &msg); err != nil {
-				log.Printf("Receive error: %+v", err)
-				delete(s.sockets, ws)
-				break
+				if errors.Is(err, io.EOF) || errors.Is(err, net.ErrClosed) {
+					// websocket connection closed by either client or server
+					delete(s.sockets, ws)
+					break
+				}
+				log.Printf("Receive error: %v", err)
 			}
 		}
 	}()
