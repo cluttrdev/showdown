@@ -41,7 +41,7 @@ func (s *Server) Serve(ctx context.Context, addr string) error {
 	// start server
 	go func() {
 		if err := srv.ListenAndServe(); err != http.ErrServerClosed {
-			log.Printf("HTTP server error: %+v\n", err)
+			log.Printf("HTTP server error: %v\n", err)
 		}
 	}()
 
@@ -79,7 +79,7 @@ func (s *Server) handleShutdown(w http.ResponseWriter, r *http.Request) {
 func (s *Server) sendTitle() {
 	for ws, _ := range s.sockets {
 		if err := sendMessage(ws, MessageTypeTitle, s.Title); err != nil {
-			log.Printf("error sending title: %+v\n", err)
+			log.Printf("error sending title: %v\n", err)
 		}
 	}
 }
@@ -87,14 +87,14 @@ func (s *Server) sendTitle() {
 func (s *Server) Update() {
 	bytes, err := s.Renderer.Render()
 	if err != nil {
-		log.Printf("error rendering content: %+v", err)
+		log.Printf("error rendering content: %v", err)
 		return
 	}
 
 	content := string(bytes)
 	for ws, _ := range s.sockets {
 		if err := sendMessage(ws, MessageTypeContent, content); err != nil {
-			log.Printf("error sending content: %+v\n", err)
+			log.Printf("error sending content: %v\n", err)
 		}
 	}
 }

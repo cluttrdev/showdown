@@ -43,7 +43,7 @@ func eventLoop(w *fsnotify.Watcher, onWrite func()) {
 			if !ok { // Channel is closed (i.e. Watcher.Close() was called)
 				return
 			}
-			log.Fatal(err)
+			log.Println(err)
 		case e, ok := <-w.Events:
 			if !ok { // Channel is closed (i.e. Watcher.Close() was called)
 				return
