@@ -11,31 +11,38 @@ For an update on the latest changes please have a look at the
 
 ## Installation
 
-To install `showdown` you can download a prebuild binary from the 
-[releases](https://github.com/cluttrdev/showdown/releases) page.
-
-E.g. if you're on Linux:
+To install `gitlab-clickhouse-exporter` you can download a 
+[prebuilt binary][prebuilt-binaries] that matches your system, e.g.
 
 ```shell
-# determine latest release
-RELEASE_TAG=$(curl -sSL https://api.github.com/repos/cluttrdev/showdown/releases/latest | jq -r '.tag_name')
-# download release archive
-curl -sSL -O https://github.com/cluttrdev/showdown/releases/download/${RELEASE_TAG}/showdown_${RELEASE_TAG}_linux_x86_64.tar.gz
-# extract binary
-tar -zxf showdown_${RELEASE_TAG}_linux_x86_64.tar.gz showdown
-# install it
-install ./showdown /usr/local/bin/showdown
+OS=linux
+ARCH=x86_64
+# Download
+RELEASE_TAG=$(curl -sSfL https://api.github.com/repos/cluttrdev/showdown/releases/latest | jq -r '.tag_name')
+curl -sSfL https://github.com/cluttrdev/showdown/releases/download/${RELEASE_TAG}/showdown_${RELEASE_TAG}_${OS}_${ARCH}.tar.gz -o /tmp/showdown.tar.gz
+# Install
+tar -xozf /tmp/showdown.tar.gz showdown
+install ./showdown ~/.local/bin/showdown
+```
+
+Alternatively, if you have the [Go][go-install] tools installed on your
+machine, you can use
+
+```shell
+go install github.com/cluttrdev/showdown@latest
 ```
 
 ## Usage
 
-To preview a Markdown formatted file `example.md` simply run
+To preview a Markdown formatted file, e.g. this project's `README.md`, simply
+run
 
 ```shell
-showdown example.md
+showdown README.md
 ```
 
-This will render the file content as HTML and serve it under <http://localhost:1337/>
+This will render the file content as HTML, serve it under <http://127.0.0.1:1337/>
+and update the preview when it changes.
 
 Run `showdown --help` for more information.
 
@@ -47,6 +54,28 @@ This project was inspired by [livedown][github-livedown].
 
 This project is released under the [MIT License](./LICENSE)
 
+## Troubleshooting
+
+#### No live update when editing in (neo)vim
+
+If you're previewing a file while editing it using (neo)vim it might not get
+updated on writes. This is probably due to how backups are configured in your
+setup (see `:help backup`).
+
+> If you write to an existing file (but do not append) while the 'backup',
+> 'writebackup' or 'patchmode' option is on, a backup of the original file is
+> made. The file is either copied or renamed (see 'backupcopy').
+
+If `backupcopy` is set to `"no"` (or `"auto"`) the original file is renamed and
+a new one is written to. Thus, the backup file is checked for changes instead
+of the newly created file.
+
+To fix this, consider setting the `backupcopy` optoin to `"yes"`. This will
+make a copy of the file and overwrite the original one.
+
+<!-- Links -->
 [github-fsnotify]: https://github.com/fsnotify/fsnotify
 [github-gomarkdown]: https://github.com/gomarkdown/markdown
 [github-livedown]: https://github.com/shime/livedown
+[go-install]: https://go.dev/doc/install
+[prebuilt-binaries]: https://github.com/cluttrdev/showdown/releases/latest
