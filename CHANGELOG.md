@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
  - Refactor project into server and cmd packages
  - Replace goreleaser with justfile and scripts
+ - Require POST method for /shutdown endpoint
 
 ## [0.2.0] - 2023-03-12
 

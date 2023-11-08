@@ -71,13 +71,22 @@ func (s *Server) routes() (*http.ServeMux, error) {
 }
 
 func (s *Server) handleShutdown(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("OK"))
+	if r.Method != http.MethodPost {
+		status := http.StatusMethodNotAllowed
+		http.Error(w, http.StatusText(status), status)
+		return
+	}
+
+	if _, err := w.Write([]byte("OK")); err != nil {
+		log.Printf("error writing http response: %v", err)
+	}
+
 	// cancel server context on request
 	s.cancel()
 }
 
 func (s *Server) sendTitle() {
-	for ws, _ := range s.sockets {
+	for ws := range s.sockets {
 		if err := sendMessage(ws, MessageTypeTitle, s.Title); err != nil {
 			log.Printf("error sending title: %v\n", err)
 		}
@@ -92,7 +101,7 @@ func (s *Server) Update() {
 	}
 
 	content := string(bytes)
-	for ws, _ := range s.sockets {
+	for ws := range s.sockets {
 		if err := sendMessage(ws, MessageTypeContent, content); err != nil {
 			log.Printf("error sending content: %v\n", err)
 		}
