@@ -78,19 +78,11 @@ func (s *Server) handleShutdown(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if _, err := w.Write([]byte("OK")); err != nil {
-		log.Printf("error writing http response: %v", err)
+		log.Printf("error writing http response: %v\n", err)
 	}
 
 	// cancel server context on request
 	s.cancel()
-}
-
-func (s *Server) sendTitle() {
-	for ws := range s.sockets {
-		if err := sendMessage(ws, MessageTypeTitle, s.Title); err != nil {
-			log.Printf("error sending title: %v\n", err)
-		}
-	}
 }
 
 func (s *Server) Update() {

@@ -33,6 +33,10 @@ func (s *Server) handleWebSocket(ws *websocket.Conn) {
 		}
 	}()
 
+	if err := sendMessage(ws, MessageTypeTitle, s.Title); err != nil {
+		log.Printf("error sending title: %v\n", err)
+	}
+
 	// trigger sending content
 	s.Update()
 
@@ -68,12 +72,4 @@ func sendMessage(ws *websocket.Conn, t MessageType, d string) error {
 	}
 
 	return nil
-}
-
-func sendTitle(ws *websocket.Conn, title string) error {
-	return sendMessage(ws, MessageTypeTitle, title)
-}
-
-func sendContent(ws *websocket.Conn, content string) error {
-	return sendMessage(ws, MessageTypeContent, content)
 }
