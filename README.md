@@ -16,7 +16,7 @@ To install `gitlab-clickhouse-exporter` you can download a
 
 ```shell
 OS=linux
-ARCH=x86_64
+ARCH=amd64
 # Download
 RELEASE_TAG=$(curl -sSfL https://api.github.com/repos/cluttrdev/showdown/releases/latest | jq -r '.tag_name')
 curl -sSfL https://github.com/cluttrdev/showdown/releases/download/${RELEASE_TAG}/showdown_${RELEASE_TAG}_${OS}_${ARCH}.tar.gz -o /tmp/showdown.tar.gz
@@ -70,7 +70,7 @@ If `backupcopy` is set to `"no"` (or `"auto"`) the original file is renamed and
 a new one is written to. Thus, the backup file is checked for changes instead
 of the newly created file.
 
-To fix this, consider setting the `backupcopy` optoin to `"yes"`. This will
+To fix this, consider setting the `backupcopy` option to `"yes"`. This will
 make a copy of the file and overwrite the original one.
 
 <!-- Links -->
