@@ -42,7 +42,7 @@ showdown README.md
 ```
 
 This will render the file content as HTML, serve it under <http://127.0.0.1:1337/>
-and update the preview when it changes.
+and update the preview on changes.
 
 Run `showdown --help` for more information.
 
