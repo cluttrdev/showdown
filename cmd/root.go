@@ -20,6 +20,7 @@ import (
 )
 
 type RootCmdConfig struct {
+	host string
 	port string
 }
 
@@ -41,6 +42,7 @@ func NewRootCmd() *command.Command {
 }
 
 func (c *RootCmdConfig) RegisterFlags(fs *flag.FlagSet) {
+	fs.StringVar(&c.host, "host", "127.0.0.1", "The address the server listens to.")
 	fs.StringVar(&c.port, "port", "1337", "The port the server listens on.")
 }
 
@@ -70,7 +72,7 @@ func (c *RootCmdConfig) run(ctx context.Context, file string) error {
 
 	// start server
 	g.Go(func() error {
-		addr := fmt.Sprintf("127.0.0.1:%s", c.port)
+		addr := fmt.Sprintf("%s:%s", c.host, c.port)
 		return srv.Serve(ctx, addr)
 	})
 
