@@ -42,6 +42,7 @@ func (s *Server) Serve(ctx context.Context, addr string) error {
 	go func() {
 		if err := srv.ListenAndServe(); err != http.ErrServerClosed {
 			log.Printf("HTTP server error: %v\n", err)
+			cancel()
 		}
 	}()
 
