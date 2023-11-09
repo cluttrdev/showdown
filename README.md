@@ -11,7 +11,7 @@ For an update on the latest changes please have a look at the
 
 ## Installation
 
-To install `gitlab-clickhouse-exporter` you can download a 
+To install `showdown` you can download a 
 [prebuilt binary][prebuilt-binaries] that matches your system, e.g.
 
 ```shell
