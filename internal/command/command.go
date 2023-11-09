@@ -5,6 +5,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"strings"
 )
 
 type Command struct {
@@ -15,6 +16,12 @@ type Command struct {
 
 	Flags *flag.FlagSet
 	Exec  func(ctx context.Context, args []string) error
+
+	Subcommands []*Command
+
+	selected *Command
+	parent   *Command
+	args     []string
 }
 
 func (cmd *Command) Parse(args []string) error {
@@ -30,8 +37,25 @@ func (cmd *Command) Parse(args []string) error {
 	}
 
 	if err := cmd.Flags.Parse(args); err != nil {
-		return err
+		return fmt.Errorf("%s: %w", cmd.Name, err)
 	}
+
+	cmd.args = cmd.Flags.Args()
+
+	// check for subcommands
+	if len(cmd.args) > 0 {
+		arg0 := cmd.args[0]
+		for _, subcmd := range cmd.Subcommands {
+			if strings.EqualFold(arg0, subcmd.Name) {
+				cmd.selected = subcmd
+				subcmd.parent = cmd
+				return subcmd.Parse(cmd.args[1:])
+			}
+		}
+	}
+
+	// select self if no subcommand was found
+	cmd.selected = cmd
 
 	return nil
 }
@@ -41,19 +65,22 @@ func (cmd *Command) Run(ctx context.Context) (err error) {
 		return errors.New("not parsed")
 	}
 
-	if cmd.Exec == nil {
+	if cmd.selected == nil {
+		return errors.New("none selected")
+	}
+
+	switch {
+	case cmd.selected == cmd && cmd.Exec == nil:
 		return fmt.Errorf("%s: %w", cmd.Name, errors.New("no exec function"))
+	case cmd.selected == cmd && cmd.Exec != nil:
+		defer func() {
+			if errors.Is(err, flag.ErrHelp) {
+				cmd.Flags.Usage()
+				err = nil
+			}
+		}()
+		return cmd.Exec(ctx, cmd.args)
+	default:
+		return cmd.selected.Run(ctx)
 	}
-
-	defer func() {
-		if errors.Is(err, flag.ErrHelp) {
-			cmd.Flags.Usage()
-			err = nil
-		}
-	}()
-
-	if err := cmd.Exec(ctx, cmd.Flags.Args()); err != nil {
-		return err
-	}
-	return nil
 }

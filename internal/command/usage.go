@@ -15,11 +15,11 @@ func usageFunc(c *Command) string {
 		fmt.Fprintf(&b, "\n")
 	}
 
-	fmt.Fprintf(&b, "Usage:")
+	fmt.Fprintf(&b, "USAGE\n")
 	if c.ShortUsage != "" {
-		fmt.Fprintf(&b, " %s\n", c.ShortUsage)
+		fmt.Fprintf(&b, "  %s\n", c.ShortUsage)
 	} else {
-		fmt.Fprintf(&b, " %s\n", c.Name)
+		fmt.Fprintf(&b, "  %s\n", c.Name)
 	}
 	fmt.Fprintf(&b, "\n")
 
@@ -27,8 +27,18 @@ func usageFunc(c *Command) string {
 		fmt.Fprintf(&b, "%s\n\n", c.LongHelp)
 	}
 
+	if len(c.Subcommands) > 0 {
+		fmt.Fprintf(&b, "COMMANDS\n")
+		tw := tabwriter.NewWriter(&b, 0, 2, 2, ' ', 0)
+		for _, subcommand := range c.Subcommands {
+			fmt.Fprintf(tw, "  %s\t%s\n", subcommand.Name, subcommand.ShortHelp)
+		}
+		tw.Flush()
+		fmt.Fprintf(&b, "\n")
+	}
+
 	if countFlags(c.Flags) > 0 {
-		fmt.Fprintf(&b, "Flags\n")
+		fmt.Fprintf(&b, "OPTIONS\n")
 		tw := tabwriter.NewWriter(&b, 0, 2, 2, ' ', 0)
 		c.Flags.VisitAll(func(f *flag.Flag) {
 			_, usage := flag.UnquoteUsage(f)
