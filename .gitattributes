@@ -1,0 +1,4 @@
+# Linguist: ignore css stylesheets
+web/static/css/*.css -linguist-detectable
+# Linguist: ignore shell scripts
+scripts/*.sh -linguist-detectable
