@@ -22,6 +22,8 @@ import (
 type RootCmdConfig struct {
 	host string
 	port string
+
+	style string
 }
 
 func NewRootCmd() *command.Command {
@@ -44,6 +46,8 @@ func NewRootCmd() *command.Command {
 func (c *RootCmdConfig) RegisterFlags(fs *flag.FlagSet) {
 	fs.StringVar(&c.host, "host", "127.0.0.1", "The address the server listens to.")
 	fs.StringVar(&c.port, "port", "1337", "The port the server listens on.")
+
+	fs.StringVar(&c.style, "style", "plain", "The CSS style to use.")
 }
 
 func (c *RootCmdConfig) Exec(ctx context.Context, args []string) error {
@@ -64,7 +68,10 @@ func (c *RootCmdConfig) run(ctx context.Context, file string) error {
 	}
 
 	srv := server.Server{
-		Title:    r.File,
+		Config: server.ServerConfig{
+			Title: file,
+			Style: c.style,
+		},
 		Renderer: r,
 	}
 

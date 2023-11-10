@@ -11,8 +11,13 @@ import (
 	"github.com/cluttrdev/showdown/pkg/content"
 )
 
+type ServerConfig struct {
+	Title string
+	Style string
+}
+
 type Server struct {
-	Title    string
+	Config   ServerConfig
 	Renderer content.Renderer
 
 	sockets map[*websocket.Conn]context.CancelFunc
@@ -57,14 +62,15 @@ func (s *Server) Serve(ctx context.Context, addr string) error {
 }
 
 func (s *Server) routes() (*http.ServeMux, error) {
-	fs, err := fileServer()
+	sfs, err := staticFileServer()
 	if err != nil {
 		return nil, err
 	}
 
 	mux := http.NewServeMux()
 
-	mux.Handle("/", fs)
+	mux.Handle("/", rootHandler(s.Config.Style))
+	mux.Handle("/static/", http.StripPrefix("/static", sfs))
 	mux.Handle("/ws", websocket.Handler(s.handleWebSocket))
 	mux.HandleFunc("/shutdown", s.handleShutdown)
 
