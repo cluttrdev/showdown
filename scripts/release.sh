@@ -49,10 +49,10 @@ test -n "${tag}" || (echo "No tag exactly matches current commit" && exit 1)
 test -n "${GITHUB_TOKEN}" || (echo "Missing required github token" && exit 1)
 
 #
-# Create release assets
+# Build release assets
 #
 
-${verbose} && echo "Creating binary distributions..."
+${verbose} && echo "Creating distributions archives..."
 sh -c "${scriptsdir}/dist.sh -n '${bin_name}' -d '${dist_dir}'"
 
 assets=$(find ${dist_dir}/ -type f \
@@ -60,8 +60,32 @@ assets=$(find ${dist_dir}/ -type f \
 )
 
 #
+# Create release changelog
+#
+
+changes=$(get_changes)
+changelog=$(awk '{ printf "%s\\n", $0}' <<-EOF
+## Changelog
+$(awk '{ print "  - [`" $1 "`][" $1 "] " substr($0, index($0, $2)) }' <<< $changes)
+
+<!-- Link -->
+$(awk '{ print "[" $1 "]: https://github.com/cluttrdev/showdown/commit/" $1 }' <<< $changes)
+EOF
+)
+
+#
 # Create release
 #
+
+release_data() {
+    cat <<-EOF
+{
+    "tag_name": "${tag}",
+    "name": "${tag}",
+    "body": "${changelog}"
+}
+EOF
+}
 
 owner=${GITHUB_OWNER}
 repo=${GITHUB_REPO}
@@ -71,7 +95,7 @@ response=$(curl -L -s \
     -H "Accept: application/vnd.github+json" \
     -H "Authorization: Bearer ${GITHUB_TOKEN}" \
     -H "X-GitHub-Api-Version 2022-11-28" \
-    -d "{\"tag_name\": \"${tag}\", \"name\": \"${tag}\", \"body\": \"\"}" \
+    -d "$(release_data | awk '{ printf "%s ", $0}')" \
     https://api.github.com/repos/${owner}/${repo}/releases \
     2>/dev/null
 )
@@ -85,6 +109,7 @@ error=$(jq -r '.errors[0].code // empty' <<< $response)
 release_id=$(jq -r '.id // empty' <<< $response)
 [ -n "$release_id" ] || {
     echo "No release with tag: ${tag}"
+    echo $response
     exit 1
 }
 
