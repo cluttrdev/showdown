@@ -7,7 +7,7 @@ ws.onmessage = (event) => {
             document.querySelector('title').innerHTML = msg.data;
             break;
         case 'content':
-            document.querySelector('.markdown-content').innerHTML = msg.data;
+            document.querySelector('.markdown-body').innerHTML = msg.data;
             break;
     }
 }

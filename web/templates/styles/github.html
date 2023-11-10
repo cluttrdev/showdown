@@ -1,0 +1,28 @@
+{{- define "style" -}}
+    {{- if eq .Style.Variant "" }}
+        <link rel="stylesheet" type="text/css" href="static/css/github-markdown.css">
+    {{- else if eq .Style.Variant "light" }}
+        <link rel="stylesheet" type="text/css" href="static/css/github-markdown-light.css">
+    {{- else if eq .Style.Variant "dark" }}
+        <link rel="stylesheet" type="text/css" href="static/css/github-markdown-dark.css">
+    {{- end }}
+        <style>
+            /*
+            * https://github.com/sindresorhus/github-markdown-css#usage
+            */
+
+            .markdown-body {
+                box-sizing: border-box;
+                min-width: 200px;
+                max-width: 980px;
+                margin: 0 auto;
+                padding: 45px;
+            }
+
+            @media (max-width: 767px) {
+                .markdown-body {
+                    padding: 15px;
+                }
+            }
+        </style>
+{{- end }}

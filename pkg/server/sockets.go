@@ -33,7 +33,7 @@ func (s *Server) handleWebSocket(ws *websocket.Conn) {
 		}
 	}()
 
-	if err := sendMessage(ws, MessageTypeTitle, s.Title); err != nil {
+	if err := sendMessage(ws, MessageTypeTitle, s.Config.Title); err != nil {
 		log.Printf("error sending title: %v\n", err)
 	}
 
