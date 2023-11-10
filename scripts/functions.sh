@@ -8,6 +8,14 @@ get_tag() {
     git describe --exact-match 2>/dev/null
 }
 
+get_commit_sha() {
+    git rev-parse --verify ${1:-HEAD}
+}
+
+get_commit_date() {
+    TZ=UTC git show --no-patch --format='%cd' --date='format-local:%Y-%m-%dT%H:%M:%SZ' ${1:-HEAD}
+}
+
 get_pseudo_version() {
     ref=${1:-"HEAD"}
     prefix=${2:-"v0.0.0"}

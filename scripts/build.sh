@@ -30,6 +30,8 @@ scriptsdir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 source "${scriptsdir}/functions.sh"
 
 version=$(get_version)
+commit_sha=$(get_commit_sha)
+commit_date=$(get_commit_date)
 
 if [ -z "${output}" ]; then
     git_dir=$(get_git_dir)
@@ -44,7 +46,7 @@ goarch=${GOARCH:-$(go env GOHOSTARCH)}
 ${verbose} && echo "Building for ${goos}/${goarch}..."
 GOOS=${goos} GOARCH=${goarch} go build \
     -o "${output}" \
-    -ldflags "-X 'main.version=${version}'"
+    -ldflags "-X 'main.version=${version}' -X 'main.commit=${commit_sha}' -X 'main.date=${commit_date}'"
 ${verbose} && echo "Building for ${goos}/${goarch}... done"
 
 exit 0
