@@ -49,14 +49,28 @@ test -n "${tag}" || (echo "No tag exactly matches current commit" && exit 1)
 test -n "${GITHUB_TOKEN}" || (echo "Missing required github token" && exit 1)
 
 #
-# Create release assets
+# Build release assets
 #
 
-${verbose} && echo "Creating binary distributions..."
+${verbose} && echo "Creating distributions archives..."
 sh -c "${scriptsdir}/dist.sh -n '${bin_name}' -d '${dist_dir}'"
 
 assets=$(find ${dist_dir}/ -type f \
     -name "${bin_name}_${tag}_*.tar.gz" -o -name "${bin_name}_${tag}_*.zip"
+)
+
+#
+# Create release changelog
+#
+
+changes=$(get_changes)
+changelog=$(cat <<-EOF
+## Changelog
+$(awk '{ print "  - [`" $1 "`][" $1 "] " substr($0, index($0, $2)) }' <<< $changes)
+
+<!-- Link -->
+$(awk '{ print "[" $1 "]: https://github.com/cluttrdev/showdown/commit/" $1 }' <<< $changes)
+EOF
 )
 
 #
@@ -71,7 +85,7 @@ response=$(curl -L -s \
     -H "Accept: application/vnd.github+json" \
     -H "Authorization: Bearer ${GITHUB_TOKEN}" \
     -H "X-GitHub-Api-Version 2022-11-28" \
-    -d "{\"tag_name\": \"${tag}\", \"name\": \"${tag}\", \"body\": \"\"}" \
+    -d "{\"tag_name\": \"${tag}\", \"name\": \"${tag}\", \"body\": \"${changelog}\"}" \
     https://api.github.com/repos/${owner}/${repo}/releases \
     2>/dev/null
 )
