@@ -32,8 +32,13 @@ dist *args="":
     {{GIT_DIR}}/scripts/dist.sh {{args}}
 
 # create a new release
-release *args="":
+release *args="": clean generate
     {{GIT_DIR}}/scripts/release.sh {{args}}
+
+changes from="" to="":
+    #!/bin/sh
+    source {{GIT_DIR}}/scripts/functions.sh
+    get_changes {{from}} {{to}}
 
 clean:
     @# generated files
@@ -53,9 +58,6 @@ clean:
     @-[ -d {{DIST_DIR}} ] && rmdir {{DIST_DIR}}
 
 # ---
-
-_unreleased:
-    @git log --oneline $(git describe --tags --abbrev=0)...HEAD
 
 _system-info:
     @echo "{{os()}}_{{arch()}}"

@@ -44,3 +44,14 @@ is_dirty() {
 is_tagged() {
     test -n "$(get_tag)"
 }
+
+get_changes() {
+    from=${1:-$(git describe --tags --abbrev=0)}
+    to=${2:-HEAD}
+
+    if [ "${from}" == "$(git describe --tags --exact-match ${to} 2>/dev/null)" ]; then
+        from=$(git describe --tags --abbrev=0 --exclude=${from})
+    fi
+
+    git log --oneline --no-decorate ${from}..${to}
+}
