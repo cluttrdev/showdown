@@ -1,5 +1,7 @@
 # Showdown
 
+![showdown demo screenshot](./assets/images/demo-screenshot.png)
+
 Showdown is a live Markdown previewer.
 
 It uses [fsnotify][github-fsnotify] to watch a given file for changes,
@@ -46,9 +48,45 @@ and update the preview on changes.
 
 Run `showdown --help` for more information.
 
-## Acknowledgement
+### Styles
 
-This project was inspired by [livedown][github-livedown].
+When previewing your Markdown files with `showdown` you can select a style that
+should be applied to the rendered content via the `--style <name>[:<variant>]` 
+option.
+
+The following style choices are currently available:
+
+  - `plain` - i.e. no CSS style is used
+  - `github` - GitHub Markdown style replication, uses light or dark mode
+    depending on your system settings
+    - `github:light` - GitHub style, light-only
+    - `github:dark` - GitHub style, dark-only
+
+### Shutdown
+
+There are basically 2 different ways to stop a running `showdown` application.
+
+The first is to send its process a `SIGINT` or `SIGTERM` signal, either by
+hitting the `Ctrl+C` key combination (if it's running in the foreground) or by
+using a command like
+```shell
+kill -s SIGTERM $(pidof showdown)
+```
+
+The second one is to send a http `POST` request to the application server's
+`/shutdown` endpoint, e.g.
+```shell
+curl --request POST http://127.0.0.1:1337/shutdown
+```
+(There's also the `shutdown stop` command that does send this request for you.)
+
+## Acknowledgements
+
+This project was inspired by the [livedown][github-livedown] project of Hrvoje
+Šimić.
+
+The CSS stylesheets to replicate the GitHub Markdown styles were taken from 
+Sindre Sorhus' [github-markdown-css][github-markdown-css] repo.
 
 ## License
 
@@ -77,5 +115,6 @@ make a copy of the file and overwrite the original one.
 [github-fsnotify]: https://github.com/fsnotify/fsnotify
 [github-gomarkdown]: https://github.com/gomarkdown/markdown
 [github-livedown]: https://github.com/shime/livedown
+[github-markdown-css]: https://github.com/sindresorhus/github-markdown-css
 [go-install]: https://go.dev/doc/install
 [prebuilt-binaries]: https://github.com/cluttrdev/showdown/releases/latest
