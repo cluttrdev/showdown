@@ -6,15 +6,31 @@ import (
 	"flag"
 	"fmt"
 	"os"
+
+	"github.com/cluttrdev/showdown/internal/command"
+	"github.com/cluttrdev/showdown/internal/version"
 )
 
-func Execute() error {
+var rootCmd *command.Command
+
+func Configure(v version.Info) {
 	var (
-		rootCmd = NewRootCmd()
-		stopCmd = NewStopCmd()
+		stopCmd    = NewStopCmd()
+		versionCmd = NewVersionCmd(v)
 	)
 
-	rootCmd.Subcommands = append(rootCmd.Subcommands, stopCmd)
+	rootCmd = NewRootCmd()
+
+	rootCmd.Subcommands = []*command.Command{
+		stopCmd,
+		versionCmd,
+	}
+}
+
+func Execute() error {
+	if rootCmd == nil {
+		return errors.New("not configured")
+	}
 
 	if err := rootCmd.Parse(os.Args[1:]); err != nil {
 		if errors.Is(err, flag.ErrHelp) {
