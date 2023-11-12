@@ -17,12 +17,14 @@ func Configure(v version.Info) {
 	var (
 		stopCmd    = NewStopCmd()
 		versionCmd = NewVersionCmd(v)
+		termCmd    = NewTerminalCmd()
 	)
 
 	rootCmd = NewRootCmd()
 
 	rootCmd.Subcommands = []*command.Command{
 		stopCmd,
+		termCmd,
 		versionCmd,
 	}
 }

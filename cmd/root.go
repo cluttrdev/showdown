@@ -59,11 +59,12 @@ func (c *RootCmdConfig) Exec(ctx context.Context, args []string) error {
 		return flag.ErrHelp
 	}
 
-	return c.run(ctx, args[0])
+	file := args[0]
+	return c.run(ctx, file)
 }
 
 func (c *RootCmdConfig) run(ctx context.Context, file string) error {
-	r := &content.MarkdownRenderer{
+	r := &content.HTMLRenderer{
 		File: file,
 	}
 
