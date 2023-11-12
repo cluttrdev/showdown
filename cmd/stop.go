@@ -24,7 +24,7 @@ func NewStopCmd() *command.Command {
 	return &command.Command{
 		Name:       "stop",
 		ShortHelp:  "Stop the preview server",
-		ShortUsage: "showdown stop [flags]",
+		ShortUsage: "showdown stop [--port PORT]",
 		LongHelp:   "",
 		Flags:      fs,
 		Exec:       cfg.Exec,

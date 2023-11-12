@@ -30,7 +30,7 @@ func NewVersionCmd(v version.Info) *command.Command {
 	return &command.Command{
 		Name:       "version",
 		ShortHelp:  "Show version information",
-		ShortUsage: "showdown version [flags]",
+		ShortUsage: "showdown version [option]...",
 		LongHelp:   "",
 		Flags:      fs,
 		Exec:       cfg.Exec,

@@ -28,7 +28,7 @@ func NewTerminalCmd() *command.Command {
 	return &command.Command{
 		Name:       "terminal",
 		ShortHelp:  "Render markdown for terminal",
-		ShortUsage: "showdown terminal [flags] FILE",
+		ShortUsage: "showdown terminal [option]... FILE",
 		LongHelp:   "",
 		Flags:      fs,
 		Exec:       cfg.Exec,

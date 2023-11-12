@@ -36,7 +36,7 @@ func NewRootCmd() *command.Command {
 	return &command.Command{
 		Name:       "showdown",
 		ShortHelp:  "showdown - A live markdown previewer",
-		ShortUsage: "showdown [flags] FILE",
+		ShortUsage: "showdown [command] [option]... FILE",
 		LongHelp:   "",
 		Flags:      fs,
 		Exec:       cfg.Exec,
