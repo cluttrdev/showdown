@@ -1,3 +1,7 @@
+**Note:** This project moved to [codeberg.org](https://codeberg.org/and2345/showdown).
+
+---
+
 # Showdown
 
 ![showdown demo screenshot](./assets/images/demo-screenshot.png)
